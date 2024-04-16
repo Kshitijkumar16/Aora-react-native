@@ -1,25 +1,18 @@
-import {
-	View,
-	Text,
-	FlatList,
-	Image,
-	RefreshControl,
-	Alert,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 
 import { images } from "../../constants";
-import SearchInput from "../../components/SearchInput";
-import Trending from "../../components/Trending";
-import EmptyState from "../../components/EmptyState";
-import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
+import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
+import Trending from "../../components/Trending";
+import SearchInput from "../../components/SearchInput";
+import EmptyState from "../../components/EmptyState";
 import VideoCard from "../../components/VideoCard";
 
 const Home = () => {
 	const { data: posts, refetch } = useAppwrite(getAllPosts);
-	const { data: LatestPosts } = useAppwrite(getLatestPosts);
+	const { data: latestPosts } = useAppwrite(getLatestPosts);
 
 	const [refreshing, setRefreshing] = useState(false);
 
@@ -30,22 +23,31 @@ const Home = () => {
 	};
 
 	return (
-		<SafeAreaView className='h-full bg-primary'>
+		<SafeAreaView className='bg-primary'>
 			<FlatList
 				data={posts}
-				key={(item) => item.$id}
-				renderItem={({ item }) => <VideoCard video={item} />}
-				ListHeaderComponent={({ item }) => (
-					<View className='px-4 my-6 space-y-6'>
-						<View className='flex-row items-start justify-between mb-6'>
+				keyExtractor={(item) => item.$id}
+				renderItem={({ item }) => (
+					<VideoCard
+						title={item.title}
+						thumbnail={item.thumbnail}
+						video={item.video}
+						creator={item.creator.username}
+						avatar={item.creator.avatar}
+					/>
+				)}
+				ListHeaderComponent={() => (
+					<View className='flex px-4 my-6 space-y-6'>
+						<View className='flex flex-row items-start justify-between mb-6'>
 							<View>
 								<Text className='text-sm text-gray-100 font-pmedium'>
-									Welcome back
+									Welcome Back
 								</Text>
-								<Text className='text-2xl font-semibold text-white'>
-									Kshitij
+								<Text className='text-2xl text-white font-psemibold'>
+									JSMastery
 								</Text>
 							</View>
+
 							<View className='mt-1.5'>
 								<Image
 									source={images.logoSmall}
@@ -55,20 +57,21 @@ const Home = () => {
 							</View>
 						</View>
 
-						<SearchInput placeholder={"Search for a video topic"} />
+						<SearchInput />
 
 						<View className='flex-1 w-full pt-5 pb-8'>
 							<Text className='mb-3 text-lg text-gray-100 font-pregular'>
-								Latest videos
+								Latest Videos
 							</Text>
-							<Trending posts={LatestPosts ?? []} />
+
+							<Trending posts={latestPosts ?? []} />
 						</View>
 					</View>
 				)}
 				ListEmptyComponent={() => (
 					<EmptyState
-						title='No videos found.'
-						subtitle='Be the first one to upload a video'
+						title='No Videos Found'
+						subtitle='No videos created yet'
 					/>
 				)}
 				refreshControl={
