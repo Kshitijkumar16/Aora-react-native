@@ -1,3 +1,6 @@
+import EmptyState from "../../components/EmptyState";
+import SearchInput from "../../components/SearchInput";
+import VideoCard from "../../components/CustomButton";
 import { useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { View, Text, FlatList } from "react-native";
@@ -5,9 +8,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import useAppwrite from "../../lib/useAppwrite";
 import { searchPosts } from "../../lib/appwrite";
-import EmptyState from "../../components/EmptyState";
-import SearchInput from "../../components/SearchInput";
-import VideoCard from "../../components/CustomButton";
 
 const Search = () => {
 	const { query } = useLocalSearchParams();
@@ -22,15 +22,7 @@ const Search = () => {
 			<FlatList
 				data={posts}
 				keyExtractor={(item) => item.$id}
-				renderItem={({ item }) => (
-					<VideoCard
-						title={item.title}
-						thumbnail={{ uri: item.thumbnail }}
-						video={{ uri: item.video }}
-						creator={item.creator.username}
-						avatar={item.creator.avatar}
-					/>
-				)}
+				renderItem={(item) => <VideoCard video={item} />}
 				ListHeaderComponent={() => (
 					<>
 						<View className='flex px-4 my-6'>
